@@ -1,0 +1,1 @@
+I converted JS code to jQuery code and I already understand how jQuery works.
