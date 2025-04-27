@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="jquery.js"></script>
+    <style>
+         body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+      margin: 20px;
+    }
+  
+    fieldset {
+      background-color: #fff;
+      border: 2px solid #4a90e2;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    }
+  
+    legend {
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #4a90e2;
+    }
+  
+    h2, h3 {
+      color: #333;
+    }
+  
+    input[type="text"], input[type="radio"] {
+      margin: 5px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  
+    button {
+      background-color: #4a90e2;
+      color: white;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+  
+    button:hover {
+      background-color: #357ab8;
+    }
+  
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    }
+  
+    td, th {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+  
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  
+    #maxNote {
+      font-weight: bold;
+      color: #4a90e2;
+    }
+  
+    /* Style spécial pour les notes */
+    .tdNot {
+      font-weight: bold;
+    }
+  
+    .tdNot.low {
+      color: red;
+    }
+  
+    .tdNot.high {
+      color: green;
+    }
+    </style>
+</head>
+<body>
+    <fieldset>
+      <h2>Notes des stagiaires</h2>
+      <fieldset>
+        <legend>Nouvelle ligne:</legend>
+        ID: <input type="text" id="id"><br><br>
+        Nom: <input type="text" id="nom"><br><br>
+        Filière:
+        <input type="radio" name="filiere" value="TDI" class="filiere"> TDI
+        <input type="radio" name="filiere" value="TDM" class="filiere"> TDM
+        <input type="radio" name="filiere" value="TRI" class="filiere"> TRI
+        <br><br>
+        Note: <input type="text" id="note"><br><br>
+        <button id="ajouter">Ajouter la note</button>
+      </fieldset>
+  
+      <h3>Liste des notes</h3>
+      <table id="table">
+        <tr>
+          <td>Id</td>
+          <td>Nom</td>
+          <td>Note</td>
+          <td>Filière</td>
+          <td>Gestion</td>
+        </tr>
+      </table>
+  
+      <table>
+        <tr>
+          <td>La meilleure Note:</td>
+          <td id="maxNote"></td>
+        </tr>
+      </table>
+    </fieldset>
+  
+  <script>
+  
+  $(document).ready(function() {
+  
+    function validation() {
+       id = $("#id").val();
+       nom = $("#nom").val();
+       note = $("#note").val();
+       filiere = $(".filiere:checked").val();
+       msg = "";
+  
+      if (id === "") msg += " id ";
+      if (nom === "") msg += " nom ";
+      if (note === "") msg += " note ";
+      if (!filiere) msg += " choisir une filière ";
+  
+      if (note < 0 || note > 20) {
+        msg += " entrer une note entre 0 et 20 ";
+      }
+  
+      if (msg !== "") {
+        alert("Tu dois entrer" + msg);
+        return false;
+      }
+  
+      return true;
+    }
+  
+    function charger() {
+      if (validation()) {
+         id = $("#id").val();
+         nom = $("#nom").val();
+         note = $("#note").val();
+         filiereValue = $(".filiere:checked").val();
+  
+         tr = $("<tr></tr>");
+        tr.append($("<td></td>").text(id));
+        tr.append($("<td></td>").text(nom));
+        tr.append($("<td></td>").addClass("tdNot").text(note));
+        tr.append($("<td></td>").text(filiereValue));
+        tr.append($("<td></td>").html('<button class="supprimer">Supprimer</button>'));
+  
+        $("#table").append(tr);
+  
+        maxNote();
+        color();
+      }
+    }
+  
+    function maxNote() {
+       max = 0;
+      $(".tdNot").each(function() {
+         valeurNote = parseFloat($(this).text());
+        if (valeurNote > max) {
+          max = valeurNote;
+        }
+      });
+      $("#maxNote").text(max);
+    }
+  
+    function color() {
+      $(".tdNot").each(function() {
+         noteValue = parseFloat($(this).text());
+        if (noteValue < 10) {
+          $(this).css("color", "red");
+        } else {
+          $(this).css("color", "green");
+        }
+      });
+    }
+  
+    function supprimer(button) {
+      $(button).closest("tr").remove();
+      maxNote();
+      color();
+    }
+  
+    // Quand on clique sur "Ajouter"
+    $("#ajouter").click(function() {
+      charger();
+    });
+  
+    // Quand on clique sur "Supprimer" (event delegation car bouton ajouté dynamiquement)
+    $(document).on('click', '.supprimer', function() {
+      supprimer(this);
+    });
+  
+    // Au chargement, on met à jour maxNote
+    maxNote();
+    
+  });
+  </script>
+  
+  </body>
+</html>

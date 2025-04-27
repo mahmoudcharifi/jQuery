@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+      margin: 20px;
+    }
+  
+    fieldset {
+      background-color: #fff;
+      border: 2px solid #4a90e2;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    }
+  
+    legend {
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #4a90e2;
+    }
+  
+    h2, h3 {
+      color: #333;
+    }
+  
+    input[type="text"], input[type="radio"] {
+      margin: 5px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  
+    button {
+      background-color: #4a90e2;
+      color: white;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+  
+    button:hover {
+      background-color: #357ab8;
+    }
+  
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    }
+  
+    td, th {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+  
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  
+    #maxNote {
+      font-weight: bold;
+      color: #4a90e2;
+    }
+  
+    /* Style spécial pour les notes */
+    .tdNot {
+      font-weight: bold;
+    }
+  
+    .tdNot.low {
+      color: red;
+    }
+  
+    .tdNot.high {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <fieldset>
+    <h2>Notes des stagiaires</h2>
+    <fieldset>
+      <legend>Nouvelle ligne:</legend>
+      ID: <input type="text" id="id"><br><br>
+      Nom: <input type="text" id="nom"><br><br>
+      Filière: 
+      Filière :
+<input type="radio" name="filiere" value="TDI" class="filiere"> TDI
+<input type="radio" name="filiere" value="TDM" class="filiere"> TDM
+<input type="radio" name="filiere" value="TRI" class="filiere"> TRI
+<br><br>
+      Note: <input type="text" id="note"><br><br>
+      <button onclick="charger()">Ajouter la note</button>
+    </fieldset>
+    <h3>Liste des notes</h3>
+    <table id="table">
+      <tr>
+        <td>Id</td>
+        <td>Nom</td>
+        <td>Note</td>
+        <td>Filière</td>
+        <td>Gestion</td>
+      </tr>
+      <table>
+        <tr>
+          <td>La meuilleure Note:</td>
+          <td id="maxNote"></td>
+        </tr>
+      </table>
+    </table>
+  </fieldset>
+  <script>
+function validation(){
+    id = document.getElementById("id").value
+    nom = document.getElementById("nom").value
+    note = document.getElementById("note").value
+    filiere = document.getElementsByClassName("filiere")
+    msg=""
+    if(id==""){
+      msg+=" id "
+    }
+    if(nom==""){
+      msg+=" nom "
+    }
+
+    if(note==""){
+      msg+=" note "
+    }
+     checked = false;
+     filiereValue = "";
+    for ( i = 0; i < filiere.length; i++) {
+      if (filiere[i].checked) {
+        checked = true;
+        filiereValue = filiere[i].value;
+        break;
+      }
+    }
+    if (!checked) {
+      msg += " choisir une filière ";
+    }
+    if(note<0&&note>20){
+      msg+= " entrer une note entre 0 et 20"
+    }
+
+    
+  if(msg!==""){
+    alert("Tu dois entrer" + msg)
+  return false
+  }
+  return true
+}
+function charger(){
+  if(validation()==true){
+    id = document.getElementById("id").value
+    nom = document.getElementById("nom").value
+    note = document.getElementById("note").value
+    table = document.getElementById("table")
+
+    tr= document.createElement("tr")
+    td1= document.createElement("td")
+    td2= document.createElement("td")
+    td3= document.createElement("td")
+    td4= document.createElement("td")
+    td5= document.createElement("td")
+
+    td3.classList.add("tdNot")
+    
+    td1.textContent =id
+    td2.textContent =nom
+    td3.textContent =note
+    td4.textContent =filiereValue
+    td5.innerHTML ="<button onclick='supprimer(this)'>Supprimer</button>"
+
+    tr.appendChild(td1)
+    tr.appendChild(td2)
+    tr.appendChild(td3)
+    tr.appendChild(td4)
+    tr.appendChild(td5)
+    table.appendChild(tr)
+
+    maxNote()
+color()
+
+  }
+
+}
+function maxNote() {
+   notes = document.getElementsByClassName("tdNot");
+   max = 0;
+
+  for ( i = 0; i < notes.length; i++) {
+     valeurNote = parseFloat(notes[i].textContent); // convertir le texte en nombre
+    if (valeurNote > max) {
+      max = valeurNote;
+    }
+  }
+
+  document.getElementById("maxNote").innerHTML = max;
+}
+maxNote()
+
+function color(){
+  notes = document.getElementsByClassName("tdNot");
+  
+  for(i=0;i<notes.length;i++){
+    noteColor =notes[i].textContent
+    if(noteColor<10){
+    notes[i].style.color = "red"
+    }else{
+     notes[i].style.color = "green"
+    }
+  }
+}
+
+function supprimer(button) {
+  let tr = button.parentElement.parentElement; // remonter au <tr> à partir du bouton
+  tr.remove(); // supprimer le <tr>
+  
+  maxNote(); // mettre à jour la meilleure note après suppression
+  color();   // remettre à jour les couleurs
+}
+
+  </script>
+</body>
+</html>
